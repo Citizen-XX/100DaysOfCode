@@ -12,8 +12,11 @@ class Paddle(Turtle):
         self.color('white')
 
     def move_up(self):
-        self.forward(20)
+        if not self.ycor() > 230:
+            self.forward(35)
 
     def move_down(self):
-        self.back(20)
+        if not self.ycor() < -230:
+            self.back(35)
 
+    
