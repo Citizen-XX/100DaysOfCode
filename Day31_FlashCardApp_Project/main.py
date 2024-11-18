@@ -3,11 +3,18 @@ from random import choice
 import pandas as pd
 
 BACKGROUND_COLOR = "#B1DDC6"
-english = ''
+words_choice = None
 flip_timer = None
 
-csv_records_list = pd.read_csv(
-    r'Day31_FlashCardApp_Project/data/french_words.csv').to_dict(orient='records')
+try:
+    csv_records_list = pd.read_csv(
+        r'Day31_FlashCardApp_Project/data/words_to_learn.csv').to_dict(orient='records')
+    print('Previous Data Found, Loading Data...')
+except FileNotFoundError as e:
+    print(f'No Previous Data Found, Starting Fresh: {e}')
+    csv_records_list = pd.read_csv(
+        r'Day31_FlashCardApp_Project/data/french_words.csv').to_dict(orient='records')
+
 # print(csv_records_list)
 # df = pd.read_csv(
 #     r'Day31_FlashCardApp_Project/data/french_words.csv')
@@ -26,7 +33,7 @@ def timer_and_flipper(english_word):
 
 
 def random_word_picker():
-    global english, flip_timer
+    global words_choice, flip_timer
     window.after_cancel(flip_timer)
     words_choice = choice(csv_records_list)
     french = words_choice['French']
@@ -35,6 +42,18 @@ def random_word_picker():
     flash_card_canvas.itemconfig(card_word, text=french, fill='black')
     flip_timer = window.after(3000, timer_and_flipper, english)
     flash_card_canvas.itemconfig(card_image, image=front_card_img)
+    return words_choice
+
+# Data Was Known
+
+
+def data_was_known():
+    words_choice = random_word_picker()
+    # print(len(csv_records_list))
+    csv_records_list.remove(words_choice)
+    # print(pd.DataFrame(csv_records_list))
+    pd.DataFrame(data=csv_records_list).to_csv(
+        r'Day31_FlashCardApp_Project/data/words_to_learn.csv', index=False)
 
 
 # Window
@@ -69,7 +88,7 @@ unknown_button.grid(column=0, row=1)
 # Check Button
 check_img = PhotoImage(file=r'Day31_FlashCardApp_Project/images/right.png')
 check_button = Button(image=check_img, highlightthickness=0)
-check_button.config(border=0, command=random_word_picker)
+check_button.config(border=0, command=data_was_known)
 check_button.grid(column=1, row=1)
 
 random_word_picker()
