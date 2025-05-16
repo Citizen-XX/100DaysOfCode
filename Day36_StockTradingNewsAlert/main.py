@@ -75,6 +75,9 @@ if increased_more_than_five_percent:
     )
     print(message.status)
 
+else:
+    print("No Increase")
+
 # Optional: Format the SMS message like this:
 """
 TSLA: 🔺2%
